@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Form</title>
+</head>
+<body>
+    <form id="orderForm">
+        <h3>Select Pickup Point:</h3>
+        <label>
+            <input type="radio" name="pickup" value="Steinerskolen Nordstrand">
+            Steinerskolen på Nordstrand - Solveien 113 - Tirsdag 19.11.24 16:00 - 18:00
+        </label><br>
+        <label>
+            <input type="radio" name="pickup" value="Julemarked">
+            Julemarked - Solveien 113 - Fredag 30.11.24 11:00 - 17:00
+        </label><br><br>
+
+        <h3>Enter Phone Number:</h3>
+        <input type="text" id="phone" name="phone" placeholder="+47XXXXXXXX" maxlength="11"><br><br>
+
+        <h3>Select Bottle Amount:</h3>
+        <input type="number" id="bottleAmount" name="bottleAmount" min="1" value="1"><br><br>
+
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+
+    <script>
+        function submitForm() {
+            const formData = {
+                pickup: document.querySelector('input[name="pickup"]:checked')?.value,
+                phone: document.getElementById("phone").value,
+                bottleAmount: document.getElementById("bottleAmount").value
+            };
+
+            if (!formData.pickup || !formData.phone || !formData.bottleAmount) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            // Send form data to Google Apps Script Web App
+            fetch("https://script.google.com/macros/library/d/1ya4up9Js7pKY9eg6A-sNKoWR3yB1uRH1kYByZ0VIPDQJKWAV_MVs4vHP/7", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert("Data submitted successfully!");
+                    document.getElementById("orderForm").reset();
+                } else {
+                    alert("There was an error submitting the data.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("There was an error submitting the data.");
+            });
+        }
+    </script>
+</body>
+</html>
